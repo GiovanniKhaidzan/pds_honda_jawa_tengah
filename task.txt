@@ -1,0 +1,18 @@
+1. Penentuan posisi pengguna secara real-time
+
+2. Perhitungan jarak otomatis antara koordinat pengguna dengan seluruh daftar bengkel di Jawa Barat menggunakan data Latitude dan Longitude dari file CSV.
+
+3. Fitur rekomendasi yang menampilkan 3 bengkel resmi dengan jarak paling dekat dari lokasi pengguna.
+
+4. Visualisasi penanda (marker) pada peta dengan sistem pewarnaan:
+
+5. Warna Merah: Untuk bengkel sangat dekat (radius < 5 km).
+   Warna Biru: Untuk bengkel dengan jarak lebih jauh (> 5 km).
+
+6. Fitur Heatmap untuk menampilkan visualisasi area dengan konsentrasi atau kepadatan bengkel paling tinggi di wilayah Jawa Barat.
+
+7. Grafik batang (Bar Chart) yang menunjukkan jumlah sebaran bengkel per Kabupaten/Kota untuk menganalisis ketersediaan fasilitas di setiap daerah.
+
+8. Fitur Pop-up interaktif pada peta: Saat titik bengkel diklik, akan muncul informasi detail berupa Nama Bengkel dan Alamat Lengkap sesuai data dari file CSV.
+
+9. Scrap data dari  web #Giovannikhaidzan

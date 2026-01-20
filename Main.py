@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- FUNGSI LOAD DATA ---
+#LOAD ADATA
 
 def load_data():
     df = pd.read_csv('data/bengkel_honda_jabar.csv')
@@ -23,7 +23,7 @@ except:
     st.error("File 'bengkel_honda_jabar.csv' tidak ditemukan. Pastikan file ada di folder yang sama.")
     df = pd.DataFrame()
 
-# --- CSS CUSTOM ---
+#CSS CUSTOM
 st.markdown("""
     <style>
     @media (max-width: 768px) {
@@ -32,11 +32,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- JUDUL ---
+#JUDUL
 st.title("Sistem Informasi Geografis Bengkel Honda")
 st.caption("Visualisasi Data Bengkel Resmi Wilayah Jawa Barat")
 
-# --- SIDEBAR ---
+#SIDEBAR
 with st.sidebar:
     st.header("Lokasi Pengguna")
     user_lat = st.number_input("Latitude", value=-6.9175)
@@ -46,7 +46,7 @@ with st.sidebar:
     st.header("3 Terdekat")
     st.info("Fitur hitung jarak dikerjakan berdasarkan lokasi pengguna di sini.")
 
-# --- MAIN LAYOUT ---
+#MAIN LAYOUT
 col_map, col_stats = st.columns([2, 1])
 
 with col_map:
@@ -71,7 +71,7 @@ with col_stats:
     st.metric(label="Total Bengkel di CSV", value=len(df))
     st.write("Grafik per kabupaten dikerjakan di sini.")
 
-# --- FOOTER / DATA TABLE (POINT 1: TAMPILKAN DATA CSV) ---
+#FOOTER / DATA TABLE (POINT 1: TAMPILKAN DATA CSV)
 st.divider()
 st.subheader("Daftar Seluruh Bengkel (Data CSV)")
 
