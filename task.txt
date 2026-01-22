@@ -1,13 +1,13 @@
-1. Penentuan posisi pengguna secara real-time
+1. Penentuan posisi pengguna secara real-time 
 
-2. Perhitungan jarak otomatis antara koordinat pengguna dengan seluruh daftar bengkel di Jawa Barat menggunakan data Latitude dan Longitude dari file CSV.
+2. Perhitungan jarak otomatis antara koordinat pengguna dengan seluruh daftar bengkel di jateng menggunakan data Latitude dan Longitude dari file CSV. done
 
-3. Fitur rekomendasi yang menampilkan 3 bengkel resmi dengan jarak paling dekat dari lokasi pengguna.
+3. Fitur rekomendasi yang menampilkan 3 bengkel resmi dengan jarak paling dekat dari lokasi pengguna. done
 
 4. Visualisasi penanda (marker) pada peta dengan sistem pewarnaan:
 
 5. Warna Merah: Untuk bengkel sangat dekat (radius < 5 km).
-   Warna Biru: Untuk bengkel dengan jarak lebih jauh (> 5 km).
+   Warna Biru: Untuk bengkel dengan jarak lebih jauh (> 5 km). done
 
 6. Fitur Heatmap untuk menampilkan visualisasi area dengan konsentrasi atau kepadatan bengkel paling tinggi di wilayah Jawa Barat.
 

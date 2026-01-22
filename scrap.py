@@ -36,7 +36,7 @@ try:
             nama_terakhir = nama_pertama_halaman_ini
             print(f"\n[HALAMAN {halaman_sekarang}]")
             print(f"Menemukan {len(dealers)} data di halaman ini.")
-
+            #fungsi get data perhalaman 
             for i, dealer in enumerate(dealers, 1):
                 try:
                     nama = dealer.find_element(By.TAG_NAME, "h4").text
@@ -58,7 +58,7 @@ try:
                     print(f"✅Data {i}: {nama}") 
                 except:
                     continue
-
+        #fungsi button next
         try:
             next_btn = driver.find_element(By.CSS_SELECTOR, "button.paginate-btn.next")
             
@@ -80,6 +80,6 @@ try:
 finally:
     if list_bengkel:
         df = pd.DataFrame(list_bengkel).drop_duplicates()
-        df.to_csv('bengkel_honda_jabar.csv', index=False)
+        df.to_csv('bengkel_honda_jateng.csv', index=False)
         print(f"\nSELESAI! Total {len(df)} data unik disimpan.")
     driver.quit()
