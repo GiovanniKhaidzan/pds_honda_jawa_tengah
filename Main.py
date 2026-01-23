@@ -45,7 +45,7 @@ st.caption("Visualisasi Data Bengkel Resmi Wilayah Jawa Tengah")
 
 # Sidebar
 with st.sidebar:
-    st.header("📍 Lokasi Pengguna")
+    st.header("Lokasi Pengguna")
     user_lat = st.number_input("Latitude", value=-7.15097500, format="%.8f")
     user_lon = st.number_input("Longitude", value=110.14025940, format="%.8f")
     st.divider()
@@ -114,13 +114,13 @@ if not df.empty:
             st.caption(f"Wilayah: {row['Kabupaten']}")
 
 st.divider()
-col_stats, col_table = st.columns([1, 2])
+col_stats, col_stats2 = st.columns([2, 2])
 
 with col_stats:
     st.subheader("Statistik")
     st.metric(label="Total Bengkel Terdata", value=len(df))
-    st.bar_chart(df['Kabupaten'].value_counts().head(5))
+    
 
-with col_table:
-    st.subheader("Data Lengkap")
-    st.dataframe(df[['Nama', 'Kabupaten', 'Jarak_KM']].sort_values('Jarak_KM'), use_container_width=True)
+with col_stats2:
+    st.subheader("statistik")
+    
