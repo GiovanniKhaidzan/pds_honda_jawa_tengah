@@ -78,14 +78,32 @@ with col_map:
     ).add_to(m)
 
     # Marker Bengkel
-    if not df.empty:
-        for i, row in df.iterrows():
-            warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
-            folium.Marker(
-                location=[row['Latitude'], row['Longitude']],
-                popup=f"<b>{row['Nama']}</b><br>{row['Alamat']} <br>{row['Kabupaten']}</br>",
-                icon=folium.Icon(color=warna)
-            ).add_to(m)
+if not df.empty:
+    for i, row in df.iterrows():
+        warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
+       
+        popup_html = f"""
+        <div style="
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
+            width: 220px;
+        ">
+            <b style="font-size:14px;">{row['Nama']}</b><br>
+            <span>{row['Alamat']}</span><br>
+            <span>{row['Kabupaten']}</span>
+            <hr style="margin:6px 0;">
+            <span><b>Jarak:</b> {row['Jarak_KM']:.2f} KM</span>
+        </div>
+        """
+
+        folium.Marker(
+            location=[row['Latitude'], row['Longitude']],
+            popup=folium.Popup(popup_html, max_width=250),
+            icon=folium.Icon(color=warna)
+        ).add_to(m)
+
+               
 
     st_folium(m, width="100%", height=450)
 
