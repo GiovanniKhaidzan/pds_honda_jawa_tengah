@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import folium
-from streamlit_folium import st_folium
+from streamlit_folium import st
 import numpy as np
 
 st.set_page_config(
@@ -64,9 +64,9 @@ if not df.empty:
     df_terdekat = df.sort_values('Jarak_KM').head(3)
 
 #mainlayout
-col_map, col_stats = st.columns([2, 1])
+kolom_map, kolom_stats = st.columns([2, 1])
 
-with col_map:
+with kolom_map:
     st.subheader("Peta Persebaran")
     m = folium.Map(location=[user_lat, user_lon], zoom_start=9)
     
@@ -87,9 +87,9 @@ with col_map:
                 icon=folium.Icon(color=warna)
             ).add_to(m)
 
-    st_folium(m, width="100%", height=450)
+    st(m, width="100%", height=450)
 
-with col_stats:
+with kolom_stats:
     st.subheader("Statistik")
     st.metric(label="Total Bengkel di CSV", value=len(df))
 
