@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
+from folium.plugins import HeatMap 
 import numpy as np
 
 st.set_page_config(
@@ -70,6 +71,17 @@ with col_map:
     st.subheader("Peta Persebaran")
     m = folium.Map(location=[user_lat, user_lon], zoom_start=9)
     
+    #HEATMAP KEPADATAN BENGKEL 
+    if not df.empty:
+        heat_data = [[row['Latitude'], row['Longitude']] for _, row in df.iterrows()]
+        HeatMap(
+            heat_data,
+            radius=15,
+            blur=10,
+            max_zoom=13
+        ).add_to(m)
+
+    
     # Marker Pengguna
     folium.Marker(
         location=[user_lat, user_lon],
@@ -78,30 +90,30 @@ with col_map:
     ).add_to(m)
 
     # Marker Bengkel
-if not df.empty:
-    for i, row in df.iterrows():
-        warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
-       
-        popup_html = f"""
-        <div style="
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-            line-height: 1.4;
-            width: 220px;
-        ">
-            <b style="font-size:14px;">{row['Nama']}</b><br>
-            <span>{row['Alamat']}</span><br>
-            <span>{row['Kabupaten']}</span>
-            <hr style="margin:6px 0;">
-            <span><b>Jarak:</b> {row['Jarak_KM']:.2f} KM</span>
-        </div>
-        """
+    if not df.empty:
+        for i, row in df.iterrows():
+            warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
+        
+            popup_html = f"""
+            <div style="
+                font-family: Arial, sans-serif;
+                font-size: 13px;
+                line-height: 1.4;
+                width: 220px;
+            ">
+                <b style="font-size:14px;">{row['Nama']}</b><br>
+                <span>{row['Alamat']}</span><br>
+                <span>{row['Kabupaten']}</span>
+                <hr style="margin:6px 0;">
+                <span><b>Jarak:</b> {row['Jarak_KM']:.2f} KM</span>
+            </div>
+            """
 
-        folium.Marker(
-            location=[row['Latitude'], row['Longitude']],
-            popup=folium.Popup(popup_html, max_width=250),
-            icon=folium.Icon(color=warna)
-        ).add_to(m)
+            folium.Marker(
+                location=[row['Latitude'], row['Longitude']],
+                popup=folium.Popup(popup_html, max_width=250),
+                icon=folium.Icon(color=warna)
+            ).add_to(m)
 
                
 
