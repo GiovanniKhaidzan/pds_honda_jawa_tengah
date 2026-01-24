@@ -4,6 +4,7 @@ import folium
 from streamlit_folium import st_folium
 from folium.plugins import HeatMap 
 import numpy as np
+import matplotlib.pyplot as plt
 
 st.set_page_config(
     page_title="GIS Bengkel Honda Jateng",
@@ -120,7 +121,38 @@ with col_stats:
     st.subheader("Statistik")
     st.metric(label="Total Bengkel Terdata", value=len(df))
     
-
 with col_stats2:
-    st.subheader("statistik")
-    
+    st.subheader("Statistik Wilayah")
+
+    data_kab = df['Kabupaten'].value_counts().head(5)
+
+    # BAR CHART
+    st.bar_chart(data_kab)
+    st.caption("Distribusi Bengkel per Kabupaten (Top 5)")
+
+    st.divider()
+
+    # PIE CHART
+    fig1, ax1 = plt.subplots()
+    ax1.pie(
+        data_kab.values,
+        labels=data_kab.index,
+        autopct='%1.1f%%',
+        startangle=90
+    )
+    ax1.axis('equal')
+    st.pyplot(fig1)
+
+    st.divider()
+
+    #HORIZONTAL BAR CHART
+    fig2, ax2 = plt.subplots()
+    ax2.barh(data_kab.index, data_kab.values)
+    ax2.set_xlabel("Jumlah Bengkel")
+    ax2.set_ylabel("Kabupaten")
+    ax2.set_title("Perbandingan Jumlah Bengkel")
+
+    st.pyplot(fig2)
+
+
+
