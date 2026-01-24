@@ -65,8 +65,29 @@ m = folium.Map(location=[user_lat, user_lon], zoom_start=9)
 
 # 1. HEATMAP (Layer Paling Bawah)
 if not df.empty:
-    heat_data = [[row['Latitude'], row['Longitude']] for _, row in df.iterrows() if abs(row['Latitude']) <= 90]
-    HeatMap(heat_data, radius=15, blur=10, max_zoom=13).add_to(m)
+    df_kab = (
+        df.groupby("Kabupaten")
+        .agg({
+            "Latitude": "mean",
+            "Longitude": "mean",
+            "Nama": "count"
+        })
+        .reset_index()
+        .rename(columns={"Nama": "Jumlah_Bengkel"})
+    )
+
+    heat_data = [
+        [row["Latitude"], row["Longitude"], row["Jumlah_Bengkel"]]
+        for _, row in df_kab.iterrows()
+    ]
+
+    HeatMap(
+        heat_data,
+        radius=40,
+        blur=25,
+        max_zoom=10
+    ).add_to(m)
+
 
 # 2. MARKER PENGGUNA
 folium.Marker(
