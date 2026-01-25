@@ -47,10 +47,13 @@ st.caption("Visualisasi Data Bengkel Resmi Wilayah Jawa Tengah")
 # Sidebar
 with st.sidebar:
     st.header("Lokasi Pengguna")
-    user_lat = st.number_input("Latitude", value=-7.15097500, format="%.8f")
-    user_lon = st.number_input("Longitude", value=110.14025940, format="%.8f")
+    user_lat = st.number_input("Latitude", value=-6.99049680, format="%.8f")
+    user_lon = st.number_input("Longitude", value=110.42294450, format="%.8f")
     st.divider()
     st.info("Koordinat di atas digunakan sebagai titik pusat pencarian bengkel terdekat.")
+    show_heatmap = st.checkbox("Tampilkan Heatmap", value=True)
+    show_markers = st.checkbox("Tampilkan Marker Bengkel", value=True)
+    
 
 # Logic hitung lokasi terdekat
 if not df.empty:
@@ -65,7 +68,7 @@ st.subheader("Peta Persebaran")
 m = folium.Map(location=[user_lat, user_lon], zoom_start=9)
 
 # 1. HEATMAP (Layer Paling Bawah)
-if not df.empty:
+if show_heatmap and not df.empty:
     df_kab = (
         df.groupby("Kabupaten")
         .agg({
@@ -91,6 +94,7 @@ if not df.empty:
 
 
 # 2. MARKER PENGGUNA
+
 folium.Marker(
     location=[user_lat, user_lon],
     popup="<b>Lokasi Anda Sekarang</b>",
@@ -98,7 +102,7 @@ folium.Marker(
 ).add_to(m)
 
 # 3. MARKER BENGKEL 
-if not df.empty:
+if show_markers and not df.empty:
     for i, row in df.iterrows():
         if pd.isna(row['Latitude']) or abs(row['Latitude']) > 90:
             continue
@@ -136,44 +140,64 @@ if not df.empty:
             st.caption(f"Wilayah: {row['Kabupaten']}")
 
 st.divider()
-col_stats, col_stats2 = st.columns([2, 2])
+with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
+    st.markdown("Ringkasan Strategis")
+    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
+    with col_kpi1:
+        st.metric(label="Total Bengkel Terdata", value=len(df))
+    with col_kpi2:
+        jarak_min = df['Jarak_KM'].min()
+        st.metric(label="Bengkel Terdekat", value=f"{jarak_min:.2f} KM")
+    with col_kpi3:
+        max_kab = df['Kabupaten'].value_counts().idxmax()
+        st.metric(label="Pusat Kepadatan Bengkel", value=max_kab)
 
-with col_stats:
-    st.subheader("Statistik")
-    st.metric(label="Total Bengkel Terdata", value=len(df))
+    st.divider()
+    st.markdown("Analisis Kesenjangan Wilayah")
+    col_kab1, col_kab2 = st.columns(2)
     
-with col_stats2:
-    st.subheader("Statistik Wilayah")
-
-    data_kab = df['Kabupaten'].value_counts().head(5)
-
-    # BAR CHART
-    st.bar_chart(data_kab)
-    st.caption("Distribusi Bengkel per Kabupaten (Top 5)")
-
-    st.divider()
-
-    # PIE CHART
-    fig1, ax1 = plt.subplots()
-    ax1.pie(
-        data_kab.values,
-        labels=data_kab.index,
-        autopct='%1.1f%%',
-        startangle=90
-    )
-    ax1.axis('equal')
-    st.pyplot(fig1)
+    with col_kab1:
+        st.write("5 Wilayah Dengan Bengkel Terpadat")
+        data_kab_top = df['Kabupaten'].value_counts().head(5)
+        st.bar_chart(data_kab_top)
+    
+    with col_kab2:
+        st.write("*5 Wilayah dengan Potensi Pengembangan Tinggi")
+        data_kab_bottom = df['Kabupaten'].value_counts().tail(5).sort_values(ascending=True)
+        fig_gap, ax_gap = plt.subplots(figsize=(10, 6.5)) 
+        bars = ax_gap.barh(data_kab_bottom.index, data_kab_bottom.values, color='orange')
+        ax_gap.bar_label(bars, padding=3)
+        ax_gap.set_xlabel("Jumlah Bengkel Resmi")
+        ax_gap.set_title("Wilayah dengan Cakupan Layanan Terendah")
+        st.pyplot(fig_gap)
 
     st.divider()
 
-    #HORIZONTAL BAR CHART
-    fig2, ax2 = plt.subplots()
-    ax2.barh(data_kab.index, data_kab.values)
-    ax2.set_xlabel("Jumlah Bengkel")
-    ax2.set_ylabel("Kabupaten")
-    ax2.set_title("Perbandingan Jumlah Bengkel")
+    #analsisi spasial
+    st.markdown("Analisis Jangkauan & Aksesibilitas")
+    col_dist1, col_dist2 = st.columns(2)
 
-    st.pyplot(fig2)
+    with col_dist1:
+        st.write("Kepadatan Jangkauan (Histogram)")
+        fig_dist, ax_dist = plt.subplots()
+        ax_dist.hist(df['Jarak_KM'], bins=20, color='skyblue', edgecolor='black')
+        ax_dist.set_xlabel("Jarak (KM)")
+        ax_dist.set_ylabel("Frekuensi")
+        st.pyplot(fig_dist)
+        
+        st.write("Sebaran Outlier Jarak (Box Plot)")
+        fig_box, ax_box = plt.subplots(figsize=(10, 3))
+        ax_box.boxplot(df['Jarak_KM'], vert=False, patch_artist=True, 
+                        boxprops=dict(facecolor='lightgreen'))
+        ax_box.set_xlabel("Jarak (KM)")
+        st.pyplot(fig_box)
 
-
-
+    with col_dist2:
+        st.write("Kurva Aksesibilitas Kumulatif")
+        df_sorted = df.sort_values('Jarak_KM')
+        df_sorted['Kumulatif_Bengkel'] = range(1, len(df_sorted) + 1)
+        st.line_chart(df_sorted.set_index('Jarak_KM')['Kumulatif_Bengkel'])
+        st.caption("Melihat seberapa cepat user mendapatkan akses ke banyak bengkel berdasarkan radius.")
+        st.write("Data Bengkel Dalam Radius Dekat (< 10 KM)")
+        bengkel_dekat = df[df['Jarak_KM'] <= 10][['Nama', 'Jarak_KM']].sort_values('Jarak_KM')
+        st.dataframe(bengkel_dekat, use_container_width=True, height=150)
