@@ -197,7 +197,6 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         df_sorted = df.sort_values('Jarak_KM')
         df_sorted['Kumulatif_Bengkel'] = range(1, len(df_sorted) + 1)
         st.line_chart(df_sorted.set_index('Jarak_KM')['Kumulatif_Bengkel'])
-        st.caption("Melihat seberapa cepat user mendapatkan akses ke banyak bengkel berdasarkan radius.")
         st.write("Data Bengkel Dalam Radius Dekat (< 10 KM)")
         bengkel_dekat = df[df['Jarak_KM'] <= 10][['Nama', 'Jarak_KM']].sort_values('Jarak_KM')
-        st.dataframe(bengkel_dekat, use_container_width=True, height=250)
+        st.dataframe(bengkel_dekat, use_container_width=True, height=150)
