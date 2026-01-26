@@ -162,7 +162,7 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         st.bar_chart(data_kab_top)
     
     with col_kab2:
-        st.write("*5 Wilayah dengan Potensi Pengembangan Tinggi")
+        st.write("5 Wilayah dengan Potensi Pengembangan Tinggi")
         data_kab_bottom = df['Kabupaten'].value_counts().tail(5).sort_values(ascending=True)
         fig_gap, ax_gap = plt.subplots(figsize=(10, 6.5)) 
         bars = ax_gap.barh(data_kab_bottom.index, data_kab_bottom.values, color='orange')
@@ -200,4 +200,4 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         st.caption("Melihat seberapa cepat user mendapatkan akses ke banyak bengkel berdasarkan radius.")
         st.write("Data Bengkel Dalam Radius Dekat (< 10 KM)")
         bengkel_dekat = df[df['Jarak_KM'] <= 10][['Nama', 'Jarak_KM']].sort_values('Jarak_KM')
-        st.dataframe(bengkel_dekat, use_container_width=True, height=150)
+        st.dataframe(bengkel_dekat, use_container_width=True, height=300)
