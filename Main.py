@@ -200,4 +200,4 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         st.caption("Melihat seberapa cepat user mendapatkan akses ke banyak bengkel berdasarkan radius.")
         st.write("Data Bengkel Dalam Radius Dekat (< 10 KM)")
         bengkel_dekat = df[df['Jarak_KM'] <= 10][['Nama', 'Jarak_KM']].sort_values('Jarak_KM')
-        st.dataframe(bengkel_dekat, use_container_width=True, height=300)
+        st.dataframe(bengkel_dekat, use_container_width=True, height=250)
