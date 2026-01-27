@@ -41,7 +41,7 @@ try:
                 try:
                     nama = dealer.find_element(By.TAG_NAME, "h4").text
                     alamat = dealer.find_element(By.CSS_SELECTOR, "div[class*='box-address']").text
-                    
+                    kota_kab = dealer.find_element(By.CSS_SELECTOR, "div[class*='box-city']").text
                     link_href = dealer.find_element(By.TAG_NAME, "a").get_attribute("href")
                     lat, lon = None, None
                     if "destination=" in link_href:
@@ -52,6 +52,7 @@ try:
                     list_bengkel.append({
                         'Nama': nama,
                         'Alamat': alamat,
+                        'Wilayah': kota_kab,
                         'Latitude': lat,
                         'Longitude': lon
                     })    
@@ -80,6 +81,6 @@ try:
 finally:
     if list_bengkel:
         df = pd.DataFrame(list_bengkel).drop_duplicates()
-        df.to_csv('bengkel_honda_jateng.csv', index=False)
+        df.to_csv('bengkel_honda_jateng_coba.csv', index=False)
         print(f"\nSELESAI! Total {len(df)} data unik disimpan.")
     driver.quit()

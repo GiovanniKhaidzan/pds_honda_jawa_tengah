@@ -67,10 +67,10 @@ if not df.empty:
 st.subheader("Peta Persebaran")
 m = folium.Map(location=[user_lat, user_lon], zoom_start=9)
 
-# 1. HEATMAP (Layer Paling Bawah)
+# 1. HEATMAP 
 if show_heatmap and not df.empty:
     df_kab = (
-        df.groupby("Kabupaten")
+        df.groupby("Wilayah")
         .agg({
             "Latitude": "mean",
             "Longitude": "mean",
@@ -108,17 +108,23 @@ if show_markers and not df.empty:
             continue
             
         warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
+        google_maps_url = f"https://www.google.com/maps/dir/?api=1&origin={user_lat},{user_lon}&destination={row['Latitude']},{row['Longitude']}&travelmode=driving"
 
         popup_html = f"""
             <div style="font-family: Arial, sans-serif; font-size: 12px; width: 200px;">
                 <b style="font-size:14px; color:#c0392b;">{row['Nama']}</b><br>
                 <b>Alamat:</b> {row['Alamat']}<br>
-                <b>Wilayah:</b> {row['Kabupaten']}<br>
+                <b>Wilayah:</b> {row['Wilayah']}<br>
                 <hr style="margin:5px 0;">
-                <b>Jarak:</b> {row['Jarak_KM']:.2f} KM
+                <b>Jarak:</b> {row['Jarak_KM']:.2f} KM<br><br>
+                <a href="{google_maps_url}" target="_blank" 
+                   style="display: block; text-align: center; background-color: #c0392b; 
+                          color: white; padding: 8px; border-radius: 5px; 
+                          text-decoration: none; font-weight: bold;">
+                   Petunjuk Arah (Maps)
+                </a>
             </div>
         """
-
         folium.Marker(
             location=[row['Latitude'], row['Longitude']],
             popup=folium.Popup(popup_html, max_width=250),
@@ -134,10 +140,26 @@ if not df.empty:
     cols = st.columns(3)
     for idx, (i, row) in enumerate(df_terdekat.iterrows()):
         with cols[idx]:
-            st.success(f"**{row['Nama']}**")
-            st.write(f"{row['Alamat']}")
-            st.write(f"Jarak: **{row['Jarak_KM']:.2f} KM**")
-            st.caption(f"Wilayah: {row['Kabupaten']}")
+            st.markdown(f"""
+                <div style="
+                    background-color: #f8f9fa; 
+                    padding: 15px; 
+                    border-radius: 10px; 
+                    min-height: 250px;
+                    margin-bottom: 10px;
+                    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+                ">
+                    <h4 style="color: #3BB143; margin-top: 0;">{row['Nama']}</h4>
+                    <p style="font-size: 13px; color: #555; height: 50px; overflow: hidden;">
+                        {row['Alamat']}
+                    </p>
+                    <p style="margin-bottom: 5px;">Jarak: <b>{row['Jarak_KM']:.2f} KM</b></p>
+                    <small style="color: #888;">{row['Wilayah']}</small>
+                </div>
+            """, unsafe_allow_html=True)
+            google_maps_url = f"https://www.google.com/maps/dir/?api=1&origin={user_lat},{user_lon}&destination={row['Latitude']},{row['Longitude']}&travelmode=driving"
+            st.link_button("Buka Google Maps", google_maps_url, use_container_width=True)
+
 
 st.divider()
 with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
@@ -149,7 +171,7 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         jarak_min = df['Jarak_KM'].min()
         st.metric(label="Bengkel Terdekat", value=f"{jarak_min:.2f} KM")
     with col_kpi3:
-        max_kab = df['Kabupaten'].value_counts().idxmax()
+        max_kab = df['Wilayah'].value_counts().idxmax()
         st.metric(label="Pusat Kepadatan Bengkel", value=max_kab)
 
     st.divider()
@@ -158,12 +180,12 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
     
     with col_kab1:
         st.write("5 Wilayah Dengan Bengkel Terpadat")
-        data_kab_top = df['Kabupaten'].value_counts().head(5)
+        data_kab_top = df['Wilayah'].value_counts().head(5)
         st.bar_chart(data_kab_top)
     
     with col_kab2:
         st.write("5 Wilayah dengan Potensi Pengembangan Tinggi")
-        data_kab_bottom = df['Kabupaten'].value_counts().tail(5).sort_values(ascending=True)
+        data_kab_bottom = df['Wilayah'].value_counts().tail(5).sort_values(ascending=True)
         fig_gap, ax_gap = plt.subplots(figsize=(10, 6.5)) 
         bars = ax_gap.barh(data_kab_bottom.index, data_kab_bottom.values, color='orange')
         ax_gap.bar_label(bars, padding=3)
