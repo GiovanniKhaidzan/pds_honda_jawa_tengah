@@ -3,6 +3,7 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 from folium.plugins import HeatMap 
+from streamlit_js_eval import streamlit_js_eval
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -47,8 +48,35 @@ st.caption("Visualisasi Data Bengkel Resmi Wilayah Jawa Tengah")
 # Sidebar
 with st.sidebar:
     st.header("Lokasi Pengguna")
-    user_lat = st.number_input("Latitude", value=-6.99049680, format="%.8f")
-    user_lon = st.number_input("Longitude", value=110.42294450, format="%.8f")
+    DEFAULT_LAT = -6.99049680
+    DEFAULT_LON = 110.42294450
+
+    if 'user_lat' not in st.session_state:
+        st.session_state.user_lat = DEFAULT_LAT
+    if 'user_lon' not in st.session_state:
+        st.session_state.user_lon = DEFAULT_LON
+
+    if st.button("Gunakan Lokasi GPS Saya", use_container_width=True):
+        from streamlit_js_eval import get_geolocation
+        loc = get_geolocation() 
+        
+        if loc:
+            st.session_state.user_lat = loc['coords']['latitude']
+            st.session_state.user_lon = loc['coords']['longitude']
+            st.success("Lokasi diperbarui ke GPS!")
+            st.rerun()
+
+    user_lat = st.number_input("Latitude", 
+                               value=st.session_state.user_lat, 
+                               format="%.8f")
+    user_lon = st.number_input("Longitude", 
+                               value=st.session_state.user_lon, 
+                               format="%.8f")
+    
+    if user_lat != st.session_state.user_lat or user_lon != st.session_state.user_lon:
+        st.session_state.user_lat = user_lat
+        st.session_state.user_lon = user_lon
+
     st.divider()
     st.info("Koordinat di atas digunakan sebagai titik pusat pencarian bengkel terdekat.")
     show_heatmap = st.checkbox("Tampilkan Heatmap", value=True)
@@ -111,18 +139,20 @@ if show_markers and not df.empty:
         google_maps_url = f"https://www.google.com/maps/dir/?api=1&origin={user_lat},{user_lon}&destination={row['Latitude']},{row['Longitude']}&travelmode=driving"
 
         popup_html = f"""
-            <div style="font-family: Arial, sans-serif; font-size: 12px; width: 200px;">
-                <b style="font-size:14px; color:#c0392b;">{row['Nama']}</b><br>
-                <b>Alamat:</b> {row['Alamat']}<br>
-                <b>Wilayah:</b> {row['Wilayah']}<br>
-                <hr style="margin:5px 0;">
-                <b>Jarak:</b> {row['Jarak_KM']:.2f} KM<br><br>
-                <a href="{google_maps_url}" target="_blank" 
-                   style="display: block; text-align: center; background-color: #c0392b; 
-                          color: white; padding: 8px; border-radius: 5px; 
-                          text-decoration: none; font-weight: bold;">
-                   Petunjuk Arah (Maps)
-                </a>
+            <div style="font-family: Arial, sans-serif; font-size: 12px; width: 200px; color: canvastext; background-color: canvas;">
+            <b style="font-size:14px; color:#e74c3c;">{row['Nama']}</b><br>
+            <b>Alamat:</b> {row['Alamat']}<br>
+            <b>Wilayah:</b> {row['Wilayah']}<br>
+            <hr style="margin:5px 0; border: 0; border-top: 1px solid #ccc;">
+            <b>Jarak:</b> {row['Jarak_KM']:.2f} KM<br><br>
+            
+            <a href="{google_maps_url}" target="_blank" 
+            style="display: block; text-align: center; 
+                    background-color: #2980b9; color: white; 
+                    padding: 8px; border-radius: 5px; 
+                    text-decoration: none; font-weight: bold;">
+                Petunjuk Arah (Maps)
+            </a>
             </div>
         """
         folium.Marker(
