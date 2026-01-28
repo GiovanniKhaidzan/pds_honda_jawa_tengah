@@ -6,6 +6,7 @@ from folium.plugins import HeatMap
 from streamlit_js_eval import get_geolocation
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 loc = get_geolocation() 
 
 st.set_page_config(
@@ -58,6 +59,8 @@ with st.sidebar:
         st.session_state.user_lon = DEFAULT_LON
 
     if st.button("Gunakan Lokasi GPS Saya", use_container_width=True):
+        time.sleep
+        
         with st.status("Sedang mengambil koordinat GPS", expanded=False) as status:
             if loc and isinstance(loc, dict) and 'coords' in loc:
                 st.session_state.user_lat = loc['coords']['latitude']
