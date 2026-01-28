@@ -3,9 +3,10 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 from folium.plugins import HeatMap 
-from streamlit_js_eval import streamlit_js_eval
+from streamlit_js_eval import get_geolocation
 import numpy as np
 import matplotlib.pyplot as plt
+loc = get_geolocation() 
 
 st.set_page_config(
     page_title="GIS Bengkel Honda Jateng",
@@ -57,14 +58,22 @@ with st.sidebar:
         st.session_state.user_lon = DEFAULT_LON
 
     if st.button("Gunakan Lokasi GPS Saya", use_container_width=True):
-        from streamlit_js_eval import get_geolocation
-        loc = get_geolocation() 
+
         
-        if loc:
-            st.session_state.user_lat = loc['coords']['latitude']
-            st.session_state.user_lon = loc['coords']['longitude']
-            st.success("Lokasi diperbarui ke GPS!")
-            st.rerun()
+        with st.status("Sedang mengambil koordinat GPS", expanded=False) as status:
+            if loc:
+                st.session_state.user_lat = loc['coords']['latitude']
+                st.session_state.user_lon = loc['coords']['longitude']
+                status.update(label="Lokasi berhasil diperbarui!", state="complete", expanded=False)
+                st.success("Koordinat diperbarui!")
+                st.rerun()
+            else:
+                status.update(label="Gagal mengambil lokasi!", state="error", expanded=True)
+                st.error("""
+                    **Akses Ditolak/Gagal.** 1. Pastikan 'Location' di Windows Settings sudah **ON**.
+                    2. Berikan izin (Allow) saat browser meminta akses lokasi.
+                    3. Klik tombol lagi setelah memberikan izin.
+                """)
 
     user_lat = st.number_input("Latitude", 
                                value=st.session_state.user_lat, 
@@ -82,6 +91,7 @@ with st.sidebar:
     show_heatmap = st.checkbox("Tampilkan Heatmap", value=True)
     show_markers = st.checkbox("Tampilkan Marker Bengkel", value=True)
     
+
 
 # Logic hitung lokasi terdekat
 if not df.empty:
@@ -126,7 +136,8 @@ if show_heatmap and not df.empty:
 folium.Marker(
     location=[user_lat, user_lon],
     popup="<b>Lokasi Anda Sekarang</b>",
-    icon=folium.Icon(color='red', icon='user', prefix='fa')
+    icon=folium.Icon(color='red', icon='user', prefix='fa'),
+    z_index_offset=1000
 ).add_to(m)
 
 # 3. MARKER BENGKEL 
@@ -251,4 +262,8 @@ with st.expander("Lihat Statistik dan Analisis Data Spasial", expanded=False):
         st.line_chart(df_sorted.set_index('Jarak_KM')['Kumulatif_Bengkel'])
         st.write("Data Bengkel Dalam Radius Dekat (< 10 KM)")
         bengkel_dekat = df[df['Jarak_KM'] <= 10][['Nama', 'Jarak_KM']].sort_values('Jarak_KM')
-        st.dataframe(bengkel_dekat, use_container_width=True, height=150)
+        if not bengkel_dekat.empty:
+            st.dataframe(bengkel_dekat, use_container_width=True, height=200)
+        else:
+            st.warning(f"Tidak ada bengkel ditemukan dalam radius 10 KM dari lokasi ({user_lat:.4f}, {user_lon:.4f}).")
+            st.info("Coba pindahkan lokasi atau gunakan GPS jika tersedia.")

@@ -4,3 +4,4 @@ folium
 streamlit-folium
 numpy
 matplotlib
+streamlit_js_eval
