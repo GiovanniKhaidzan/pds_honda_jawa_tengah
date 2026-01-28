@@ -61,7 +61,7 @@ with st.sidebar:
 
         
         with st.status("Sedang mengambil koordinat GPS", expanded=False) as status:
-            if loc:
+            if loc is not None:
                 st.session_state.user_lat = loc['coords']['latitude']
                 st.session_state.user_lon = loc['coords']['longitude']
                 status.update(label="Lokasi berhasil diperbarui!", state="complete", expanded=False)
