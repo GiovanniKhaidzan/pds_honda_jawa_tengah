@@ -58,10 +58,8 @@ with st.sidebar:
         st.session_state.user_lon = DEFAULT_LON
 
     if st.button("Gunakan Lokasi GPS Saya", use_container_width=True):
-
-        
         with st.status("Sedang mengambil koordinat GPS", expanded=False) as status:
-            if loc is not None:
+            if loc and isinstance(loc, dict) and 'coords' in loc:
                 st.session_state.user_lat = loc['coords']['latitude']
                 st.session_state.user_lon = loc['coords']['longitude']
                 status.update(label="Lokasi berhasil diperbarui!", state="complete", expanded=False)
