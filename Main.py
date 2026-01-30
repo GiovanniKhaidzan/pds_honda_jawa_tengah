@@ -120,7 +120,7 @@ if show_heatmap and not df.empty:
     )
 
     heat_data = [
-        [row["Latitude"], row["Longitude"], row["Jumlah_Bengkel"]]
+        [row["Latitude"], row["Longitude"], row["   "]]
         for _, row in df_kab.iterrows()
     ]
 
@@ -148,10 +148,12 @@ if show_markers and not df.empty:
             continue
             
         warna = 'green' if row['Nama'] in df_terdekat['Nama'].values else 'blue'
-        google_maps_url = f"https://www.google.com/maps/dir/?api=1&origin={user_lat},{user_lon}&destination={row['Latitude']},{row['Longitude']}&travelmode=driving"
+        google_maps_url = f"https://www.google.com/maps/dir/?api=1&origin={user_lat},{
+            user_lon}&destination={row['Latitude']},{row['Longitude']}&travelmode=driving"
 
         popup_html = f"""
-            <div style="font-family: Arial, sans-serif; font-size: 12px; width: 200px; color: canvastext; background-color: canvas;">
+            <div style="font-family: Arial, sans-serif; font-size: 12px; width: 200px; color: canvastext; 
+            background-color: canvas;">
             <b style="font-size:14px; color:#e74c3c;">{row['Nama']}</b><br>
             <b>Alamat:</b> {row['Alamat']}<br>
             <b>Wilayah:</b> {row['Wilayah']}<br>

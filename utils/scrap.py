@@ -26,7 +26,6 @@ try:
             EC.presence_of_element_located((By.CSS_SELECTOR, "div[class*='dealer-box']"))
         )
         time.sleep(2)
-
         dealers = driver.find_elements(By.CSS_SELECTOR, "div[class*='dealer-box']")
         
         nama_pertama_halaman_ini = dealers[0].find_element(By.TAG_NAME, "h4").text

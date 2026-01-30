@@ -33,7 +33,7 @@ def bersihkan_koordinat(row):
 print("Sedang memperbaiki koordinat yang terbalik secara otomatis...")
 df[['Latitude', 'Longitude']] = df.apply(lambda row: bersihkan_koordinat(row), axis=1)
 
-output_file = "bengkel_honda_jateng_bersih_final2.csv"
+output_file = "bengkel_honda_jateng_bersih_final.csv"
 df.to_csv(output_file, index=False)
 
 print("-" * 50)
