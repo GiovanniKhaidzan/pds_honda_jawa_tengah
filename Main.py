@@ -123,7 +123,7 @@ if show_heatmap and not df.empty:
         [row["Latitude"], row["Longitude"], row["Jumlah_Bengkel"]]
         for _, row in df_kab.iterrows()
     ]
-
+#ddd
     HeatMap(
         heat_data,
         radius=40,
